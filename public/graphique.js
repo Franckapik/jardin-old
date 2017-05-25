@@ -1,3 +1,42 @@
+var tableauTime = [];
+var tableauTemp = [];
+
+var graphique = function (abscisse, ordonnee){
+    TESTER = document.getElementById('graphique');
+    Plotly.plot( TESTER, [{
+    x: abscisse,
+    y: ordonnee }], {
+    margin: { t: 0 } } );
+};
+
+var parseJSON = function(tableauTime, tableauTemp) {
+
+    $.getJSON('./public/message.json', function(data, tableauTime, tableauTemp) {
+        for (var i = 0; i < 10; i++) {
+            var timeFormat = moment(data.results[i].time).format('MMMM Do YYYY, h:mm a');
+
+            tableauTime.push(timeFormat);
+            tableauTemp.push(data.results[i].temperature);
+        }
+
+
+
+    });
+
+
+};
+
+
+
+parseJSON(tableauTime, tableauTemp);
+graphique(tableauTime, tableauTemp);
+
+
+
+
+
+/**
+
 //Ouverture du fichier JSON de données
 
 const req = new XMLHttpRequest();
@@ -16,19 +55,18 @@ req.onreadystatechange = function(event) {
                 var timeFormat= moment(rep.results[i].time).format('MMMM Do YYYY, h:mm a');
                 tableauTime.push(timeFormat);
                 tableauTemp.push(rep.results[i].valeur);
+                console.log("hey");
             }
             console.log('tbleau' + tableauTime);
-            makeGraph();
+            graphique();
         } else {
             console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
         }
     }
 };
 
-req.open('GET', './public/message.json', true);
-req.send(null);
-console.log(tableauTime);
 
+/**
 //création du graphique via Chartjs
 var makeGraph = function(){
     var ctx = document.getElementById("graphique");
@@ -87,3 +125,4 @@ var makeGraph = function(){
         }
     });
 }
+**/

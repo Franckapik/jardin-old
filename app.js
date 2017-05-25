@@ -11,7 +11,6 @@ const app = express();
 //routes
 app.get ('/', controller.Index);
 
-cronData.job;
 app.listen(8080);
 console.log("Le site du jardin est disponible sur le port 8080");
 
