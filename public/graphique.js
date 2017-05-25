@@ -9,26 +9,29 @@ var graphique = function (abscisse, ordonnee){
     margin: { t: 0 } } );
 };
 
-var parseJSON = function(tableauTime, tableauTemp) {
+var parseJSON = function(Time, Temp) {
 
-    $.getJSON('./public/message.json', function(data, tableauTime, tableauTemp) {
+    $.getJSON('./public/message.json', function(data) {
         for (var i = 0; i < 10; i++) {
             var timeFormat = moment(data.results[i].time).format('MMMM Do YYYY, h:mm a');
 
-            tableauTime.push(timeFormat);
-            tableauTemp.push(data.results[i].temperature);
+            Time.push(timeFormat);
+            Temp.push(data.results[i].temperature);
+
         }
 
 
 
     });
 
+    
 
 };
 
 
 
 parseJSON(tableauTime, tableauTemp);
+
 graphique(tableauTime, tableauTemp);
 
 
