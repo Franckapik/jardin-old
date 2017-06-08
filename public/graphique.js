@@ -20,8 +20,12 @@ var parseJSON = function(Time, Temp, Humi, Eau) {
         }
 
 
+
+
+
     });
 
+return;
 
 };
 
@@ -103,6 +107,6 @@ var makeCircle = function(Time, Temp, Humi, Eau) { //Température actuelle
 };
 
 
-parseJSON(tableauTime, tableauTemp, tableauHumi, tableauEau);
-makeChart(tableauTime, tableauTemp, tableauHumi, tableauEau);
-makeCircle(tableauTime, tableauTemp, tableauHumi, tableauEau);
+parseJSON(tableauTime, tableauTemp, tableauHumi, tableauEau).then (makeChart(tableauTime, tableauTemp, tableauHumi, tableauEau)).then(makeCircle(tableauTime, tableauTemp, tableauHumi, tableauEau));
+/**makeChart(tableauTime, tableauTemp, tableauHumi, tableauEau);
+makeCircle(tableauTime, tableauTemp, tableauHumi, tableauEau);*/
