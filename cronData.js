@@ -3,7 +3,7 @@ var controller = require('./controller');
 
 
 
-var job = new CronJob('*/30 * * * *', function() {
+var job = new CronJob('*/1 * * * *', function() {
   /*
    * Runs every weekday (Monday through Friday)
    * at 11:30:00 AM. It does not run on Saturday

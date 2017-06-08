@@ -1,4 +1,4 @@
-var express = require ('express');
+var express = require('express');
 var Influx = require('influx');
 var fs = require('fs');
 var moment = require('moment');
@@ -16,10 +16,10 @@ var db = new Influx.InfluxDB({
 
 
 //Fonction de rendu de l'index (route /)
-var indexCreation = function (req, res) { 
+var indexCreation = function(req, res) {
 
 
-    res.render('index',function(err, html) {
+    res.render('index', function(err, html) {
         //fonctions executées lors de la demande de l'index
         makeData();
         queryData();
@@ -32,7 +32,7 @@ var makeData = function(req, res) { //DHT vers Base de données
 
 
     var current = dht.read(11, 4); // 11 : DHT11, 18 : BCM GPIO   
-    if (current.temperature && current.temperature !=0 && current.humidity && current.humidity != 0) {
+    if (current.temperature && current.temperature != 0 && current.humidity && current.humidity != 0) {
         console.log("La température (" + current.temperature + "°C) et l'humidité (" + current.humidity + "%) actuelles sont ajoutées à la base de donnée");
 
         db.writePoints([{
@@ -44,26 +44,28 @@ var makeData = function(req, res) { //DHT vers Base de données
             }
         }]);
 
-    } else { console.log("Impossible de récupérer les valeurs météo"); }
+    } else {
+        console.log("Impossible d'ajouter les valeurs de temp [ " + current.temperature + " ] / humidité [ " + current.humidity + " ] dans la base de donnees.") ;
+
+    }
+
 
 };
 
 
 
-var queryData = function (req, res) { //Base de données vers JSON
+var queryData = function(req, res) { //Base de données vers JSON
     db.query('select * from meteo order by time desc limit 1000').then(results => {
 
-        var data =JSON.stringify({results}); //object javascript avec ses proprietes.
-        
-        fs.writeFile('./public/message.json',data, (err) => {
+        var data = JSON.stringify({ results }); //object javascript avec ses proprietes.
+
+        fs.writeFile('./public/message.json', data, (err) => {
             if (err) throw err;
             console.log('Consultation de la base de donnée meteo et édition du fichier message.json');
         });
-    }
-    );
+    });
 };
 
 
 exports.Index = indexCreation;
 exports.MakeData = makeData;
-

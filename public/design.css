@@ -1,0 +1,17 @@
+body {
+    background-color: rgba(50, 55, 57, 1);
+}
+
+.container {
+	color: rgba(183,214,177,1);
+}
+.row_Header {
+	text-align: center;
+	color: rgba(183,214,177,1);
+}
+
+footer {
+    background-color: #555;
+    color: white;
+    padding: 15px;
+}

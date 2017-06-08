@@ -1,23 +1,38 @@
 {
-  "name": "jardin",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "dependencies": {
-    "chart.js": "^2.5.0",
-    "cron": "^1.2.1",
-    "dht-sensor": "0.0.4",
-    "ejs": "^2.5.6",
-    "express": "^4.15.3",
-    "influx": "^5.0.0-alpha.4",
-    "moment": "^2.18.1",
-    "plotly": "^1.0.6",
-    "plotly.js": "^1.27.1"
-  },
-  "devDependencies": {},
+  "name": "raspberry-pi-mjpeg-server",
+  "version": "0.0.8",
+  "description": "Node.js mjpeg streaming server for the Raspberry PI camera module",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
-  "author": "fanch",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/john-doherty/raspberry-pi-mjpeg-server.git"
+  },
+  "homepage": "https://github.com/john-doherty/raspberry-pi-mjpeg-server#readme",
+  "bugs": {
+    "url": "https://github.com/john-doherty/raspberry-pi-mjpeg-server/issues"
+  },
+  "author": "John Doherty <contact@johndoherty.info> (www.johndoherty.info)",
+  "license": "ISC",
+  "keywords": [
+    "raspberry",
+    "pi",
+    "camera",
+    "rpi",
+    "mjpeg",
+    "server",
+    "stream",
+    "motion",
+    "jpeg"
+  ],
+  "dependencies": {
+    "chokidar": "^1.6.0",
+    "commander": "^2.9.0",
+    "ip": "^1.1.4",
+    "jquery-circle-progress": "^1.2.2",
+    "pubsub-js": "~1.5.2"
+  }
 }

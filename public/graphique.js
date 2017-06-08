@@ -1,131 +1,108 @@
 var tableauTime = [];
 var tableauTemp = [];
+var tableauHumi = [];
+var tableauEau = [];
 
-var graphique = function (abscisse, ordonnee){
-    TESTER = document.getElementById('graphique');
-    Plotly.plot( TESTER, [{
-    x: abscisse,
-    y: ordonnee }], {
-    margin: { t: 0 } } );
-};
-
-var parseJSON = function(Time, Temp) {
+var parseJSON = function(Time, Temp, Humi, Eau) {
 
     $.getJSON('./public/message.json', function(data) {
-        for (var i = 0; i < 10; i++) {
-            var timeFormat = moment(data.results[i].time).format('MMMM Do YYYY, h:mm a');
+
+        for (var i = 0; i < data.results.length; i++) {
+
+            moment.locale('fr');
+            var timeFormat = moment(data.results[i].time).format('MMMM Do, h:mm a');
 
             Time.push(timeFormat);
             Temp.push(data.results[i].temperature);
+            Humi.push(data.results[i].humidity);
+            Eau.push(data.results[i].niveauEau);
 
         }
-
 
 
     });
 
-    
 
 };
 
+var makeChart = function(Time, Temp, Humi, Eau) { //Construction du graphique
+    graph = document.getElementById('graphique');
 
+    var trace1 = {
+        x: Time,
+        y: Temp,
+        type: 'scatter',
+        name: 'Température',
+        fill: 'tozeroy',
+        line: {
+            color: 'rgb(255,69,0)',
+            width: '2'
 
-parseJSON(tableauTime, tableauTemp);
-
-graphique(tableauTime, tableauTemp);
-
-
-
-
-
-/**
-
-//Ouverture du fichier JSON de données
-
-const req = new XMLHttpRequest();
-var rep = null;
-
-//Variables des tableaux
-var tableauTime = [];
-var tableauTemp = [];
-
-//Methode XMLHttp
-req.onreadystatechange = function(event) {
-    if (this.readyState === XMLHttpRequest.DONE) {
-        if (this.status === 200) {
-            rep = JSON.parse(this.responseText);
-            for (var i =0; i < 1000; i++) {
-                var timeFormat= moment(rep.results[i].time).format('MMMM Do YYYY, h:mm a');
-                tableauTime.push(timeFormat);
-                tableauTemp.push(rep.results[i].valeur);
-                console.log("hey");
-            }
-            console.log('tbleau' + tableauTime);
-            graphique();
-        } else {
-            console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
         }
-    }
-};
-
-
-/**
-//création du graphique via Chartjs
-var makeGraph = function(){
-    var ctx = document.getElementById("graphique");
-//    Chart.defaults.global.responsive = false;
-    Chart.defaults.global.animation.onComplete = function () {
-        console.log('Animation terminée');
     };
-    Chart.defaults.global.animation.duration =500;
 
-    var graphique = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: tableauTime,
-            datasets: [{
-                label: "Temperature exterieure",
-                fill: true,
-                lineTension: 0.5,
-                backgroundColor: "rgba(75,192,192,0.4)",
-                borderColor: "rgba(75,192,192,1)",
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "#fff",
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: tableauTemp,
-                spanGaps: false,
-            }]
-        },
-        options: {
+    var trace2 = {
+        x: Time,
+        y: Humi,
+        type: 'scatter',
+        name: 'Humidité',
+        fill: 'tonexty',
+        line: {
+            color: 'rgb(30,144,255)',
+            width: '2'
 
-            scales: {
-                yAxes: [{
-                    stacked: true,
-                    ticks: {
-                        min:tableauTemp[0] - 10,
-                        max:tableauTemp[0] + 3,
-                        stepSize: 2
-                    }
-                }],
-                xAxes: [{
-                    type: 'time',
-                    position: 'bottom',
-                    time: {
-                        unit : 'hour'
-                    }
-                }]
-            }
         }
-    });
-}
-**/
+    };
+
+    var trace3 = {
+        x: Time,
+        y: Eau,
+        type: 'scatter',
+        name: 'Niveau Cuve',
+        line: {
+            color: 'rgb(30,144,25)',
+            width: '2'
+
+        }
+    };
+
+    var layout = {
+
+        xaxis: {
+            visible: false,
+            showgrid: false
+        },
+        yaxis: {
+            visible: true,
+            gridcolor: 'rgba(159, 198, 214, 0.8)'
+        },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+
+    var donnees = [trace1, trace2, trace3];
+
+    Plotly.plot(graph, donnees, layout);
+};
+
+var makeCircle = function(Time, Temp, Humi, Eau) { //Température actuelle
+    var TempAct = document.getElementById('divTemp');
+    TempAct.innerHTML = "Température : " + Temp[0] + " °C";
+    TempAct.style.fontSize = "1.5em";
+    //Humidité  actuelle
+    var HumiAct = document.getElementById('divHumi');
+    HumiAct.innerHTML = "Humidité: " + Humi[0] + " % ";
+    HumiAct.style.fontSize = "1.5em";
+    //Niveau Eau  actuel
+    var EauAct = document.getElementById('divEau');
+    EauAct.innerHTML = "Niveau Cuve : " + Eau[0] + " %";
+    EauAct.style.fontSize = "1.5em";
+
+
+};
+
+
+parseJSON(tableauTime, tableauTemp, tableauHumi, tableauEau);
+makeChart(tableauTime, tableauTemp, tableauHumi, tableauEau);
+makeCircle(tableauTime, tableauTemp, tableauHumi, tableauEau);
