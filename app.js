@@ -12,7 +12,7 @@ const app = express();
 //routes
 app.get ('/', controller.Index);
 
-app.listen(8080);
+							app.listen(8080);
 console.log("Le site du jardin est disponible sur le port 8080");
 
 //configure app

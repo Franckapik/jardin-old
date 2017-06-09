@@ -3,12 +3,13 @@ var Influx = require('influx');
 var fs = require('fs');
 var moment = require('moment');
 var dht = require('dht-sensor');
+var config = require('./config');
 
 //Configuration de la base de donnes
 var db = new Influx.InfluxDB({
-    host: 'localhost',
-    database: 'mydb',
-    tags: 'jardin'
+    host: config.host,
+    database: config.database,
+    tags: config.tags
 });
 
 
@@ -32,23 +33,29 @@ var makeData = function(req, res) { //DHT vers Base de données
 
 
     var current = dht.read(11, 4); // 11 : DHT11, 18 : BCM GPIO   
-    if (current.temperature && current.temperature != 0 && current.humidity && current.humidity != 0) {
-        console.log("La température (" + current.temperature + "°C) et l'humidité (" + current.humidity + "%) actuelles sont ajoutées à la base de donnée");
 
-        db.writePoints([{
-            "measurement": "meteo",
+    db.query('select niveauEau46 from meteo limit 1').then(results => {
+        lastNiveauEau = results[0].niveauEau46;
+        console.log(lastNiveauEau);
 
-            "fields": {
-                "temperature": current.temperature,
-                "humidity": current.humidity
-            }
-        }]);
+        if (current.temperature && current.temperature != 0 && current.humidity && current.humidity != 0) {
+            console.log("La température (" + current.temperature + "°C), l'humidité (" + current.humidity + "%), et le niveau d'eau (" + lastNiveauEau + ") sont ajoutées à la base de donnée");
 
-    } else {
-        console.log("Impossible d'ajouter les valeurs de temp [ " + current.temperature + " ] / humidité [ " + current.humidity + " ] dans la base de donnees.") ;
+            db.writePoints([{
+                "measurement": "meteo",
 
-    }
+                "fields": {
+                    "temperature": current.temperature,
+                    "humidity": current.humidity,
+                    "niveauEau": lastNiveauEau
+                }
+            }]);
 
+        } else {
+            console.log("Impossible d'ajouter les valeurs de temp [ " + current.temperature + " ], humidité [ " + current.humidity + " ] et le niveau d'eau (" + lastNiveauEau + ") dans la base de donnees.");
+
+        }
+    });
 
 };
 
@@ -65,6 +72,7 @@ var queryData = function(req, res) { //Base de données vers JSON
         });
     });
 };
+
 
 
 exports.Index = indexCreation;

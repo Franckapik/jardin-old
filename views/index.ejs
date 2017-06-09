@@ -4,44 +4,61 @@
 <head>
     <meta charset="utf-8">
     <title>Moniteur de Jardin</title>
-
     <!-- CSS  -->
-    <link href="/public/bootstrap.min.css" rel="stylesheet">
-    <link href="/public/design.css" rel="stylesheet"> <!--peut ecraser les styles bootstrap precedents-->
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="/public/design.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Vibur" rel="stylesheet"> 
+    <!--peut ecraser les styles bootstrap precedents-->
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
     <div class="container-fluid">
-        <div class="row_Header">
-            <div class="col-xs-12">
-                <h2>
-                <p class="text-center">Gestionnaire du Jardin</p>
-            </h2></div>
+        <div class="row Header">
+            <div class="col-sm-12">
+                <h4>
+                <p>Gestion du Jardin</p>
+            </h4></div>
         </div>
-        <div class="row_Main1">
-            <div class="col-sm-8">
+        <div class="row graph">
+            <div class="col-sm-12 mx-auto">
                 <div id="graphique" class="img-responsive"></div>
             </div>
-            <div class="col-sm-4">
-                <div id='divTemp' class="col-lg-3"></div>
-            </div>
-        </div>
-        <div class="row_Main2">
-            <div class="col-sm-3">
-                        <div id='divHumi' class="col-lg-3"></div>
-
-            </div>
-            <div class="col-sm-3">
             
-                        <div id='divEau' class="col-lg-3"></div>
-            </div>
-            <div class="col-sm-6"><img name="Camera" class="img-responsive" src="http://192.168.1.78:8085/image.jpg" alt="Live" title="Camera Jardin" /></div>
         </div>
-        <div class="row_Footer">
-            <div class="col-xs-12">
+        <div class="row circle p-3">
+            <div class="col-sm-4">
+                <div id='circleTemp' class="col-lg-4 mx-auto"><strong></strong></div>
+            </div>
+            <div class="col-sm-4 circle">
+                <div id='circleHumi' class="col-lg-4 mx-auto"><strong></strong></div>
+            </div>
+            <div class="col-sm-4 circle">
+                <div id='circleEau' class="col-lg-4 mx-auto"><strong></strong></div>
+            </div>
+        </div>
+        <div class="row Main3 p-3">
+            <div class="col-sm-12 rounded mx-auto d-block">
+                <div class ="image">
+                <img name="Camera" class="img-responsive rounded mx-auto d-block" src="http://192.168.1.78:8085/image.jpg" alt="Live" title="Camera Jardin" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row Arrosage p-1">
+            <div class="col-sm-4 ">
+                <div class ="image">
+                    <a href="http://192.168.1.46:8080/arrosage" class="btn btn-warning btn-outline-warning btn-lg mx-auto d-block active" role="button" aria-pressed="true">Arroser le jardin</a>
+                </div>
+            </div>
+            <div id="nbCycles" class="col-sm-4">
+                
+            </div>
+        </div>
+        <div class="row Footer">
+            <div class="col-xs-12 mx-auto">
                 <p>Footer Text</p>
             </div>
         </div>
@@ -49,9 +66,8 @@
 </body>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.js></script>
+<script src=https://rawgit.com/kottenator/jquery-circle-progress/1.2.2/dist/circle-progress.js></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/locale/fr.js"></script>
 <script src="/public/graphique.js"></script>
-
 
 </html>
