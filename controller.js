@@ -4,6 +4,8 @@ var fs = require('fs');
 var moment = require('moment');
 var dht = require('dht-sensor');
 var config = require('./config');
+var Promise = require("bluebird");
+var bhttp = require("bhttp");
 
 //Configuration de la base de donnes
 var db = new Influx.InfluxDB({
@@ -31,12 +33,13 @@ var indexCreation = function(req, res) {
 
 var makeData = function(req, res) { //DHT vers Base de données
 
+    Promise.try(function() {
+        return bhttp.get("http://192.168.1.46:8080/niveauCuve");
+    }).then(function(response) {
 
-    var current = dht.read(11, 4); // 11 : DHT11, 18 : BCM GPIO   
+        var current = dht.read(11, 4); // 11 : DHT11, 18 : BCM GPIO  
 
-    db.query('select niveauEau46 from meteo limit 1').then(results => {
-        lastNiveauEau = results[0].niveauEau46;
-        console.log(lastNiveauEau);
+        var niveauCuve = response.body.toString();
 
         if (current.temperature && current.temperature != 0 && current.humidity && current.humidity != 0) {
             console.log("La température (" + current.temperature + "°C), l'humidité (" + current.humidity + "%), et le niveau d'eau (" + lastNiveauEau + ") sont ajoutées à la base de donnée");
@@ -47,16 +50,17 @@ var makeData = function(req, res) { //DHT vers Base de données
                 "fields": {
                     "temperature": current.temperature,
                     "humidity": current.humidity,
-                    "niveauEau": lastNiveauEau
+                    "niveauEau": niveauCuve
                 }
             }]);
 
         } else {
-            console.log("Impossible d'ajouter les valeurs de temp [ " + current.temperature + " ], humidité [ " + current.humidity + " ] et le niveau d'eau (" + lastNiveauEau + ") dans la base de donnees.");
+            console.log("Impossible d'ajouter les valeurs de temp [ " + current.temperature + " ], humidité [ " + current.humidity + " ] et le niveau d'eau (" + niveauCuve + ") dans la base de donnees.");
 
         }
-    });
 
+
+    });
 };
 
 
@@ -73,7 +77,17 @@ var queryData = function(req, res) { //Base de données vers JSON
     });
 };
 
+var arrosage = function(req, res) {
+
+Promise.try(function() {
+    return bhttp.get("http://192.168.1.46:8080/arrosage");
+}).then(function(response) {
+    res.send("Le temps d'arrosage est de " + response.body.toString());
+});
+
+}
 
 
+exports.Arrosage = arrosage;
 exports.Index = indexCreation;
 exports.MakeData = makeData;

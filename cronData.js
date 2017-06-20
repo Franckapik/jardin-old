@@ -10,7 +10,7 @@ var job = new CronJob('*/' + config.timeCycle + ' * * * *', function() {
    * at 11:30:00 AM. It does not run on Saturday
    * or Sunday.
    */
-console.log("*** Cycle de recherche de donnée [" + config.timeCycle + " minutes] ***");
+console.log("*** Cycle de recherche de données [" + config.timeCycle + " minutes] ***");
 controller.MakeData();
 
 
