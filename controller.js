@@ -58,6 +58,8 @@ var DHT = function(temp, hum) {
     });
 }
 
+
+
 var niveauCuve = function(req, res) {
 
     return Promise.try(function() {
@@ -75,10 +77,9 @@ var makeData = function(req, res) { //DHT vers Base de données
     Promise.try(function() {
 
         return DHT();
-       niveauCuve();
-
+       
     }).then(function(values) {
-        console.log(values.temp);
+        console.log(values);
 
 
     });
