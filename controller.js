@@ -6,6 +6,7 @@ var dht = require('dht-sensor');
 var config = require('./config');
 var Promise = require("bluebird");
 var bhttp = require("bhttp");
+var PythonShell = require('python-shell');
 
 //Configuration de la base de donnes
 var db = new Influx.InfluxDB({
@@ -31,31 +32,86 @@ var indexCreation = function(req, res) {
     });
 };
 
-var makeData = function(req, res) { //DHT vers Base de données
+var DHT = function(temp, hum) {
 
+    console.log("Mesure de temperature/humidite en cours...");
+
+    var options = {
+        mode: 'text',
+        pythonPath: '/usr/bin/python',
+        pythonOptions: ['-u'],
+        scriptPath: '/home/pi/partage_samba/jardin/Adafruit_Python_DHT/examples/',
+        args: ['11', '4']
+            // make sure you use an absolute path for scriptPath
+    }
+
+    return PythonShell.run('AdafruitDHT.py', options, function(err, results) { //a finir
+        if (err) throw err;
+        console.log(results);
+        temp = parseInt(results.toString().substr(0, 4));
+        hum = parseInt(results.toString().substr(5, 9));
+        console.log(temp);
+        console.log(hum);
+
+        return [temp, hum];
+
+    });
+}
+
+var niveauCuve = function(req, res) {
+
+    return Promise.try(function() {
+        return bhttp.get("http://192.168.1.46:8080/niveauCuve");
+    }).then(function(response) {
+        var niveauCuve = response.body.toString();
+        return niveauCuve;
+    });
+}
+
+
+
+
+var makeData = function(req, res) { //DHT vers Base de données
+    Promise.try(function() {
+
+        return DHT();
+       niveauCuve();
+
+    }).then(function(values) {
+        console.log(values.temp);
+
+
+    });
+}
+
+/**
     Promise.try(function() {
         return bhttp.get("http://192.168.1.46:8080/niveauCuve");
     }).then(function(response) {
 
-        var current = dht.read(11, 4); // 11 : DHT11, 18 : BCM GPIO  
+        DHT();
+
+        var capteurs = DHT();
+        var temp = capteurs[0];
+        var hum = capteurs[1];
 
         var niveauCuve = response.body.toString();
 
-        if (current.temperature && current.temperature != 0 && current.humidity && current.humidity != 0) {
-            console.log("La température (" + current.temperature + "°C), l'humidité (" + current.humidity + "%), et le niveau d'eau (" + lastNiveauEau + ") sont ajoutées à la base de donnée");
+        if (temp && temp != 0 && hum && hum != 0) {
+            console.log("La température (" + temp + "°C), l'humidité (" + hum + "%), et le niveau d'eau (" + niveauCuve + ") sont ajoutées à la base de donnée");
 
             db.writePoints([{
                 "measurement": "meteo",
 
                 "fields": {
-                    "temperature": current.temperature,
-                    "humidity": current.humidity,
+                    "temperature": temp,
+                    "humidity": hum,
                     "niveauEau": niveauCuve
                 }
             }]);
 
         } else {
-            console.log("Impossible d'ajouter les valeurs de temp [ " + current.temperature + " ], humidité [ " + current.humidity + " ] et le niveau d'eau (" + niveauCuve + ") dans la base de donnees.");
+            console.log("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + niveauCuve + ") dans la base de donnees.");
 
         }
 
@@ -63,7 +119,7 @@ var makeData = function(req, res) { //DHT vers Base de données
     });
 };
 
-
+*/
 
 var queryData = function(req, res) { //Base de données vers JSON
     db.query('select * from meteo order by time desc limit 1000').then(results => {
@@ -79,11 +135,11 @@ var queryData = function(req, res) { //Base de données vers JSON
 
 var arrosage = function(req, res) {
 
-Promise.try(function() {
-    return bhttp.get("http://192.168.1.46:8080/arrosage");
-}).then(function(response) {
-    res.send("Le temps d'arrosage est de " + response.body.toString());
-});
+    Promise.try(function() {
+        return bhttp.get("http://192.168.1.46:8080/arrosage");
+    }).then(function(response) {
+        res.send("Le temps d'arrosage est de " + response.body.toString());
+    });
 
 }
 
