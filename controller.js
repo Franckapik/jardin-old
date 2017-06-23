@@ -32,48 +32,47 @@ var indexCreation = function(req, res) {
     });
 };
 
-var DHT = function() {
+const DHT = function() {
+    return new Promise((resolve, reject) => {
+        console.log("Mesure de temperature/humidite en cours...");
 
-    console.log("Mesure de temperature/humidite en cours...");
+        var options = {
+            mode: 'text',
+            pythonPath: '/usr/bin/python',
+            pythonOptions: ['-u'],
+            scriptPath: '/home/pi/partage_samba/jardin/Adafruit_Python_DHT/examples/',
+            args: ['11', '4']
+                // make sure you use an absolute path for scriptPath
+        }
 
-    var options = {
-        mode: 'text',
-        pythonPath: '/usr/bin/python',
-        pythonOptions: ['-u'],
-        scriptPath: '/home/pi/partage_samba/jardin/Adafruit_Python_DHT/examples/',
-        args: ['11', '4']
-            // make sure you use an absolute path for scriptPath
-    }
+        PythonShell.run('AdafruitDHT.py', options, function(err, results) { //a finir
+            if (err) reject(err);
+            console.log(results);
+            temp = parseInt(results.toString().substr(0, 4));
+            hum = parseInt(results.toString().substr(5, 9));
+            console.log(temp);
+            console.log(hum);
 
-    return PythonShell.run('AdafruitDHT.py', options, function(err, results) { //a finir
-        if (err) throw err;
-        console.log(results);
-        temp = parseInt(results.toString().substr(0, 4));
-        hum = parseInt(results.toString().substr(5, 9));
-        console.log(temp);
-        console.log(hum);
+            resolve([temp, hum]);
 
-        return [temp, hum];
+        });
+    })
 
-    });
-}
- 
-
-
-var niveauCuve = function(req, res) {
-
-    Promise.try(function() {
-        return bhttp.get("http://192.168.1.46:8080/niveauCuve");
-    }).then(function(response) {
-        console.log(response);
-        var niveauCuve = response.body.toString();
-        return niveauCuve;
-    });
 }
 
+var niveauCuve = function() {
+    return new Promise((resolve, reject) => {
+        Promise.try(function() {
+            return bhttp.get("http://192.168.1.46:8080/niveauCuve");
+        }).then(function(response) {
+            console.log(response);
+            var levelCuve = response.body.toString();
+            resolve(levelCuve)
+        });
 
+    })
 
-
+} 
 
 var makeData = function() { //DHT vers Base de données
     return Promise.try(function() {
@@ -81,11 +80,22 @@ var makeData = function() { //DHT vers Base de données
         return DHT();
 
     }).then(function(values) {
-        console.log("values : " + values[1]);
+        console.log("values : " + values[0] + values[1] + values[2]);
+        return niveauCuve();
 
-
+    }).then(function(values2) {
+        console.log("values2 : " + values2 + values[0]);
+        
     });
 }
+
+
+
+
+
+
+
+
 
 
 
