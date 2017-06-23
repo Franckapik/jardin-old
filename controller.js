@@ -15,7 +15,9 @@ var db = new Influx.InfluxDB({
     tags: config.tags
 });
 
-
+var catchError = function (e) {
+    console.error(e)
+}
 
 
 
@@ -55,7 +57,7 @@ const DHT = function() {
             resolve([temp, hum]);
 
         });
-    })
+    }).catch(catchError)
 
 }
 
@@ -68,7 +70,7 @@ var niveauCuve = function() {
             var levelCuve = response.body.toString();
             resolve(levelCuve)
             console.log('-- Niveau Cuve : ' + levelCuve);
-        });
+        }).catch(catchError);
 
     })
 
@@ -104,10 +106,7 @@ var makeData = function() { //DHT vers Base de données
 
         }
 
-    }).catch(e => {
-        
-        throw e; 
-    })
+    }).catch(catchError)
 }
 
 
