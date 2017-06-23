@@ -8,6 +8,8 @@ var Promise = require("bluebird");
 var bhttp = require("bhttp");
 var PythonShell = require('python-shell');
 
+var flag = 'free';
+
 //Configuration de la base de donnes
 var db = new Influx.InfluxDB({
     host: config.host,
@@ -15,7 +17,7 @@ var db = new Influx.InfluxDB({
     tags: config.tags
 });
 
-var catchError = function (e) {
+var catchError = function(e) {
     console.error(e)
 }
 
@@ -76,37 +78,48 @@ var niveauCuve = function() {
 
 }
 
-var makeData = function() { //DHT vers Base de données
-    return Promise.try(function() {
-        return Promise.all([
-            DHT(),
-            niveauCuve()
-        ])
-    }).then(([dht, level]) => {
-        var temp = dht[0];
-        var hum = dht[1];
+var makeData = function(req, res) { //DHT vers Base de données
+    if (flag === 'free') {
+        return Promise.try(function() {
+
+            return Promise.all([
+                var flag = 'running';
+                DHT(),
+                niveauCuve()
+            ])
+        }).then(([dht, level]) => {
+            var temp = dht[0];
+            var hum = dht[1];
+            var flag = 'free',
 
 
 
-        if (temp && temp != 0 && hum && hum != 0) {
-            console.log("La température (" + temp + "°C), l'humidité (" + hum + "%), et le niveau d'eau (" + level + ") sont ajoutées à la base de donnée");
 
-            db.writePoints([{
-                "measurement": "meteo",
+            if (temp && temp != 0 && hum && hum != 0) {
+                console.log("La température (" + temp + "°C), l'humidité (" + hum + "%), et le niveau d'eau (" + level + ") sont ajoutées à la base de donnée");
+                res.send("La température (" + temp + "°C), l'humidité (" + hum + "%), et le niveau d'eau (" + level + ") sont ajoutées à la base de donnée");
+                db.writePoints([{
+                    "measurement": "meteo",
 
-                "fields": {
-                    "temperature": temp,
-                    "humidity": hum,
-                    "niveauEau": parseInt(level)
-                }
-            }]);
+                    "fields": {
+                        "temperature": temp,
+                        "humidity": hum,
+                        "niveauEau": parseInt(level)
+                    }
+                }]);
 
-        } else {
-            console.log("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + level + ") dans la base de donnees.");
+            } else {
+                console.log("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + level + ") dans la base de donnees.");
+                res.send("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + level + ") dans la base de donnees.");
+            }
 
-        }
+        }).catch(catchError)
+    }
 
-    }).catch(catchError)
+    else {
+
+        console.log("makeData is already running");
+    }
 }
 
 
