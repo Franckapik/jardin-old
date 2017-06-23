@@ -34,7 +34,7 @@ var indexCreation = function(req, res) {
 
 const DHT = function() {
     return new Promise((resolve, reject) => {
-        console.log("Mesure de temperature/humidite en cours...");
+        console.log("[Mesure de temperature]");
 
         var options = {
             mode: 'text',
@@ -47,12 +47,11 @@ const DHT = function() {
 
         PythonShell.run('AdafruitDHT.py', options, function(err, results) { //a finir
             if (err) reject(err);
-            console.log(results);
+
             temp = parseInt(results.toString().substr(0, 4));
             hum = parseInt(results.toString().substr(5, 9));
-            console.log(temp);
-            console.log(hum);
-
+            console.log('-- Temperature : ' + temp);
+            console.log('-- Humidite : ' + hum);
             resolve([temp, hum]);
 
         });
@@ -65,56 +64,30 @@ var niveauCuve = function() {
         Promise.try(function() {
             return bhttp.get("http://192.168.1.46:8080/niveauCuve");
         }).then(function(response) {
-            console.log(response);
+
             var levelCuve = response.body.toString();
             resolve(levelCuve)
+            console.log('-- Niveau Cuve : ' + levelCuve);
         });
 
     })
 
-} 
+}
 
 var makeData = function() { //DHT vers Base de données
     return Promise.try(function() {
-
-        return DHT();
-
-    }).then(function(values) {
-        console.log("values : " + values[0] + values[1] + values[2]);
-        return niveauCuve();
-
-    }).then(function(values2) {
-        console.log("values2 : " + values2 + values[0]);
-        
-    });
-}
+        return Promise.all([
+            DHT(),
+            niveauCuve()
+        ])
+    }).then(([dht, level]) => {
+        var temp = dht[0];
+        var hum = dht[1];
 
 
-
-
-
-
-
-
-
-
-
-
-/**
-    Promise.try(function() {
-        return bhttp.get("http://192.168.1.46:8080/niveauCuve");
-    }).then(function(response) {
-
-        DHT();
-
-        var capteurs = DHT();
-        var temp = capteurs[0];
-        var hum = capteurs[1];
-
-        var niveauCuve = response.body.toString();
 
         if (temp && temp != 0 && hum && hum != 0) {
-            console.log("La température (" + temp + "°C), l'humidité (" + hum + "%), et le niveau d'eau (" + niveauCuve + ") sont ajoutées à la base de donnée");
+            console.log("La température (" + temp + "°C), l'humidité (" + hum + "%), et le niveau d'eau (" + level + ") sont ajoutées à la base de donnée");
 
             db.writePoints([{
                 "measurement": "meteo",
@@ -122,20 +95,21 @@ var makeData = function() { //DHT vers Base de données
                 "fields": {
                     "temperature": temp,
                     "humidity": hum,
-                    "niveauEau": niveauCuve
+                    "niveauEau": parseInt(level)
                 }
             }]);
 
         } else {
-            console.log("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + niveauCuve + ") dans la base de donnees.");
+            console.log("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + level + ") dans la base de donnees.");
 
         }
 
+    }).catch(e => {
+        
+        throw e; 
+    })
+}
 
-    });
-};
-
-*/
 
 var queryData = function(req, res) { //Base de données vers JSON
     db.query('select * from meteo order by time desc limit 1000').then(results => {
