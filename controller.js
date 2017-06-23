@@ -32,7 +32,7 @@ var indexCreation = function(req, res) {
     });
 };
 
-var DHT = function(temp, hum) {
+var DHT = function() {
 
     console.log("Mesure de temperature/humidite en cours...");
 
@@ -62,9 +62,10 @@ var DHT = function(temp, hum) {
 
 var niveauCuve = function(req, res) {
 
-    return Promise.try(function() {
+    Promise.try(function() {
         return bhttp.get("http://192.168.1.46:8080/niveauCuve");
     }).then(function(response) {
+        console.log(response);
         var niveauCuve = response.body.toString();
         return niveauCuve;
     });
@@ -73,17 +74,21 @@ var niveauCuve = function(req, res) {
 
 
 
-var makeData = function(req, res) { //DHT vers Base de données
-    Promise.try(function() {
+
+var makeData = function() { //DHT vers Base de données
+    return Promise.try(function() {
 
         return DHT();
-       
+
     }).then(function(values) {
-        console.log(values);
+        console.log("values : " + values[1]);
 
 
     });
 }
+
+
+
 
 /**
     Promise.try(function() {
