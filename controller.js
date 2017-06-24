@@ -63,27 +63,17 @@ const DHT = function() {
 }
 
 var niveauCuve = function() {
-        mutex
-            .lock('key')
-            .then(function(unlock) {
+        return new Promise((resolve, reject) => {
+            Promise.try(function() {
+                return bhttp.get("http://192.168.1." + config.ippi0 + ":8080/niveaucuve");
+            }).then(function(response) {
 
-                //synchronized code block 
-                return new Promise((resolve, reject) => {
-                    Promise.try(function() {
-                        return bhttp.get("http://192.168.1." + config.ippi0 + ":8080/niveaucuve");
-                    }).then(function(response) {
+                var levelCuve = response.body.toString();
+                resolve(levelCuve)
+                console.log('-- Niveau Cuve : ' + levelCuve);
+            }).catch(catchError);
 
-                        var levelCuve = response.body.toString();
-                        resolve(levelCuve)
-                        console.log('-- Niveau Cuve : ' + levelCuve);
-                    }).catch(catchError);
-
-                })
-
-                unlock();
-            });
-
-    
+        })
 
 }
 
