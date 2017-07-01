@@ -11,33 +11,61 @@
     <link href="https://fonts.googleapis.com/css?family=Vibur" rel="stylesheet"> 
     <!--peut ecraser les styles bootstrap precedents-->
     <!-- Plotly.js -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js" ></script>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row Header">
-            <div class="col-sm-12">
+            <div class="col-12">
                 <h1>
                 <p>Gestion du Jardin</p>
             </h1></div>
         </div>
         <div class="row graph">
-            <div class="col-sm-12 mx-auto">
+            <div class="col-12 mx-auto hidden-md-down">
                 <div id="graphique" class="img-responsive"></div>
             </div>
             
         </div>
-        <div class="row circle p-3">
-            <div class="col-sm-4 col-12">
-                <div id='circleTemp' class="col-lg-4 mx-auto"><strong></strong></div>
+       
+        <div class="row p-3 col-12">
+            <div class="col-10 col-lg-2 p-0">
+                <div class="sensor-container">
+                    <div class="temp-bar p-3 d-inline-block" ></div>
+                               
+                    <div class="sensor-png"><img class="image" src="public/thermo.png"></div>
+                </div>
             </div>
-            <div class="col-sm-4 circle col-12">
-                <div id='circleHumi' class="col-lg-4 mx-auto"><strong></strong></div>
+            <div id="tempData" class="col-2 col-lg-2 p-0"><h1></h1></div>
+            <div class="col-10 col-lg-2 p-0">
+                <div class="sensor-container">
+
+                    <div class="hum-bar p-3 d-inline-block" ></div>
+                              
+                    <div class="sensor-png"><img class="image" src="public/humidity.png"></div>
+
+                </div>
+
             </div>
-            <div class="col-sm-4 circle col-12">
-                <div id='circleEau' class="col-lg-4 mx-auto"><strong></strong></div>
+            <div id="humData" class="col-2 col-lg-2 p-0"><h1></h1></div>
+            <div class="col-10 col-lg-2 p-0">
+                <div class="sensor-container">
+                    <div class="cuve-bar p-3 d-inline-block" ></div>
+                               
+                    <div class="sensor-png"><img class="image" src="public/cuve.png"></div>
+                </div>
             </div>
+            <div id="eauData" class="col-2 col-lg-2 p-0"><h1></h1></div>
+           
+
+                
+            <!--<div class="col-12 col-lg-4 mx-auto p-5">
+                <div id='circleHumi' class="col-lg-4 mx-auto circle"><strong></strong></div>
+            </div>
+            <div class="col-12 mx-auto p-5">
+                <div id='circleEau' class="col-lg-4 mx-auto circle"><strong></strong></div>
+            </div> -->
         </div>
         <div class="row Main3 p-3 col-12">
             <div class="col-sm-12 rounded mx-auto d-block">
@@ -48,8 +76,8 @@
         </div>
 
         <div class="row Arrosage p-1">
-            <div class="col-sm-4 col-12 ">
-                <div class ="image">
+            <div class="col-12 ">
+                <div class ="col-5 mx-auto">
                     <a href="/arrosage" class="btn btn-warning btn-outline-warning btn-lg mx-auto d-block active" role="button" aria-pressed="true">Arroser le jardin</a>
                 </div>
             </div>

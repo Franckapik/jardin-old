@@ -1,10 +1,12 @@
 var config = {
 
-	timeCycle : 30,
+	addSensors : 10,
 	host: 'localhost',
     database: 'mydb',
     tags: 'jardin',
-    ippi0 : 49
+    ippi0 : 46,
+    timeCycleHours : 13,
+	timeCycleMinutes : 57,
 
 
 }

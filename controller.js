@@ -28,7 +28,7 @@ var indexCreation = function(req, res) {
 
     res.render('index', function(err, html) {
         //fonctions executées lors de la demande de l'index
-        makeData();
+        
         queryData();
         res.send(html);
         if (err) throw err;
@@ -48,7 +48,7 @@ const DHT = function() {
                 // make sure you use an absolute path for scriptPath
         }
 
-        PythonShell.run('AdafruitDHT.py', options, function(err, results) { 
+        PythonShell.run('AdafruitDHT.py', options, function(err, results) {
             if (err) reject(err);
 
             temp = parseInt(results.toString().substr(0, 4));
@@ -62,20 +62,30 @@ const DHT = function() {
 
 }
 
+var flag = 0;
+
 var niveauCuve = function() {
+    if (flag == 0) {
         return new Promise((resolve, reject) => {
             Promise.try(function() {
+                flag = 1;
                 return bhttp.get("http://192.168.1." + config.ippi0 + ":8080/niveaucuve");
             }).then(function(response) {
 
                 var levelCuve = response.body.toString();
                 resolve(levelCuve)
                 console.log('-- Niveau Cuve : ' + levelCuve);
+
+            }).then(function() {
+
+                flag = 0;
+
             }).catch(catchError);
 
         })
-
+    }
 }
+
 
 var makeData = function(req, res) { //DHT vers Base de données
     return Promise.try(function() {
@@ -86,24 +96,24 @@ var makeData = function(req, res) { //DHT vers Base de données
     }).then(([dht, level]) => {
         var temp = dht[0];
         var hum = dht[1];
+        var level2 = 100 - parseInt(level)
 
 
 
-        if (temp && temp != 0 && hum && hum != 0) {
-            console.log("La température (" + temp + "°C), l'humidité (" + hum + "%), et le niveau d'eau (" + level + ") sont ajoutées à la base de donnée");
+        if (temp && temp != 0 && hum && hum != 0 && level > 10 && level < 100) {
+            console.log("*** Ajout BD [" + temp + "°C - " + hum + "% - " + level2 + "cm] ***");
             db.writePoints([{
                 "measurement": "meteo",
 
                 "fields": {
                     "temperature": temp,
                     "humidity": hum,
-                    "niveauEau": parseInt(level)
+                    "niveauEau": level2
                 }
             }]);
 
         } else {
-            console.log("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + level + ") dans la base de donnees.");
-            res.send("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + level + ") dans la base de donnees.");
+            console.log("Impossible d'ajouter les valeurs de temp [ " + temp + " ], humidité [ " + hum + " ] et le niveau d'eau (" + level2 + ") dans la base de donnees.");
         }
 
     }).catch(catchError)
@@ -117,7 +127,7 @@ var queryData = function(req, res) { //Base de données vers JSON
 
         fs.writeFile('./public/message.json', data, (err) => {
             if (err) throw err;
-            console.log('Consultation de la base de donnée meteo et édition du fichier message.json');
+            console.log('Message.json - Données db récupérées');
         });
     });
 };
@@ -125,7 +135,7 @@ var queryData = function(req, res) { //Base de données vers JSON
 var arrosage = function(req, res) {
 
     Promise.try(function() {
-        return bhttp.get("http://192.168.1."+config.ippi0+":8080/arrosage");
+        return bhttp.get("http://192.168.1." + config.ippi0 + ":8080/arrosage");
     }).then(function(response) {
         res.send("Le temps d'arrosage est de " + response.body.toString());
     });

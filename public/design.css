@@ -3,32 +3,79 @@ body {
     font-family: 'Vibur', cursive;
 }
 
-p { text-align: center }
+p {
+    text-align: center
+}
+
+.sensor-container {
+    
+    position: relative;
+}
+
+h1 {
+  color: white;
+}
+
+.temp-bar {
+    height: 50%;
+    max-height: 80%;
+    width: 30%;
+    background-color: #cb3838;
+    position: absolute;
+    bottom: 20%;
+    margin: auto;
+    right: 0;
+    left: 0;
+}
+.hum-bar {
+    height: 50%;
+    max-height: 65%;
+    width: 50%;
+    background-color: #468499 ;
+    position: absolute;
+    bottom: 20%;
+    margin: auto;
+    right: 0;
+    left: 0;
+}
+.cuve-bar {
+    height: 50%;
+    max-height: 80%;
+    width: 30%;
+    background-color: #36648B;
+    position: absolute;
+    bottom: 10%;
+    margin: auto;
+    right: 0;
+    left: 0;
+}
+
+.sensor-png {
+    
+    position: relative;
+}
 
 .image {
-	text-align: center;
-	z-index : 1000;
+    height: 100%;
+    width: 100%;
 }
 
 .circle {
-  text-align: center;
-
+    background-color: rgba(59, 158, 191, 0.3);
+    border-radius: 23px;
 }
 
-
 .container {
-	color: rgba(183,214,177,1);
+    color: rgba(183, 214, 177, 1);
 }
 
 .Header {
-	text-align: center;
-	color: rgba(183,214,177,1);
-	paddin-top: 30px;
-
+    text-align: center;
+    color: rgba(183, 214, 177, 1);
+    paddin-top: 30px;
 }
 
 .Footer {
-    background-color: rgba(59, 158, 191,1);
-    
-    height : 5%;
+    background-color: rgba(59, 158, 191, 1);
+    height: 5%;
 }
