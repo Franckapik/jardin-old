@@ -7,13 +7,21 @@ p {
     text-align: center
 }
 
+#arrow {
+    height: 5%;
+    width: 10%;
+    position: relative;
+    bottom: 8%;
+}
+
 .sensor-container {
     
     position: relative;
 }
 
-h1 {
+.sensor-text {
   color: white;
+  text-align: left;
 }
 
 .temp-bar {

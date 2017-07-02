@@ -139,14 +139,81 @@ var makeCircle = function(Time, Temp, Humi, Eau) {
 
 var dataDOM = function(Time, Temp, Humi, Eau) {
 $('.temp-bar').css('height', Temp[0]*1.5 + '%')
-$('#tempData').find('h1').html(Temp[0] + '°C');
+$('#tempData').find('#value').html(Temp[0] + '°C');
+$('#tempData').find('#max').html('max ' + Math.max.apply(Math, Temp) + '°C');
+$('#tempData').find('#min').html('min ' +Math.min.apply(Math, Temp) + '°C');
+
+
 $('.hum-bar').css('height', Humi[0]*0.65 + '%')
-$('#humData').find('h1').html(Humi[0] + '%');
+$('#humData').find('#value').html(Humi[0] + '%');
+$('#humData').find('#max').html('max ' + Math.max.apply(Math, Humi) + '%');
+$('#humData').find('#min').html('min ' +Math.min.apply(Math, Humi) + '%');
+
 $('.cuve-bar').css('height', Eau[0]*0.8 + '%')
-$('#eauData').find('h1').html(Eau[0]*10 + 'Litres');
+$('#eauData').find('#value').html(Eau[0]*10 + 'Litres');
+$('#eauData').find('#max').html('max ' + Math.max.apply(Math, Eau) *10 + 'l');
+$('#eauData').find('#min').html('min ' +Math.min.apply(Math, Eau)*10  + 'l');
+
+diffT = Temp[0] - Temp[2];
+diffH = Humi[0] - Humi[2];
+diffE = Eau[0] - Eau[2];
+
+
+if (diffT < 0) {
+    $('#tempData').find('#arrow').attr("src", "public/down.png");
+}
+if (diffT > 0) {
+    $('#tempData').find('#arrow').attr("src", "public/up.png");
+}
+if (diffT == 0) {
+    $('#tempData').find('#arrow').attr("src", "public/egal.png");
+}
+if (diffH < 0) {
+    $('#humData').find('#arrow').attr("src", "public/down.png");
+}
+if (diffH > 0) {
+    $('#humData').find('#arrow').attr("src", "public/up.png");
+}
+if (diffH == 0) {
+    $('#humData').find('#arrow').attr("src", "public/egal.png");
+}
+
+if (diffT < 0) {
+    $('#eauData').find('#arrow').attr("src", "public/down.png");
+}
+if (diffT > 0) {
+    $('#eauData').find('#arrow').attr("src", "public/up.png");
+}
+if (diffT == 0) {
+    $('#eauData').find('#arrow').attr("src", "public/egal.png");
+}
 
 }
 
+var parseJSON = function() {
+    moment.locale('fr');
+    return $.getJSON('./public/message.json').then(({ results }) => {    
+        return results.reduce(({ time, temp, humi, eau }, result) => {
+            return {
+                time: time.concat([moment(result.time).format('MMMM Do, h:mm a')]),
+                temp: temp.concat([result.temperature]),
+                humi: humi.concat([result.humidity]),
+                eau: eau.concat([result.niveauEau]),
+            }
+        }, { time: [], temp: [], humi: [], eau: [] })
+    });
+};
+
+// used like this:
+
+parseJSON().then((results) => {
+    const { time, temp, humi, eau } = results;
+    makeChart(time, temp, humi, eau);
+    dataDOM(time, temp, humi, eau);
+})
+
+
+/*
 var parseJSON = function(Time, Temp, Humi, Eau) {
 
     $.getJSON('./public/message.json', function(data) {
@@ -162,13 +229,16 @@ var parseJSON = function(Time, Temp, Humi, Eau) {
             Eau.push(data.results[i].niveauEau);
 
         }
-
-        makeChart(Time, Temp, Humi, Eau);
-        makeCircle(Time, Temp, Humi, Eau);
+        
+        /**makeChart(Time, Temp, Humi, Eau);
+        
         dataDOM(Time, Temp, Humi, Eau);
 
 
-    });
+    })
+    .done(
+        console.log(Humi[0])
+        );
 };
 
 var sendConfig = function() {
@@ -178,5 +248,4 @@ var sendConfig = function() {
 };
 
 parseJSON(tableauTime, tableauTemp, tableauHumi, tableauEau);
-/**makeChart(tableauTime, tableauTemp, tableauHumi, tableauEau);
-makeCircle(tableauTime, tableauTemp, tableauHumi, tableauEau);*/
+*/
