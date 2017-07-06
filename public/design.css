@@ -7,6 +7,10 @@ p {
     text-align: center
 }
 
+#arroSlider .slider-selection {
+    background: #BABABA;
+}
+
 #arrow {
     height: 5%;
     width: 10%;

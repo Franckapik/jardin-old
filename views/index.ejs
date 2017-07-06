@@ -7,6 +7,7 @@
     <!-- CSS  -->
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
     <link href="/public/design.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Vibur" rel="stylesheet"> 
     <!--peut ecraser les styles bootstrap precedents-->
@@ -89,15 +90,31 @@
                 </div>
             </div>
         </div>
+        <div class="row slider">
+            <div class="col-12 mx-auto">
+                
+                <input id="arrotime" data-slider-id='arroSlider' type="text" />
+            <span id="ex6CurrentSliderValLabel">Temps Arrosage <span id="affichageTemps"></span></span>
+            </div>
+            
+
+        </div>
 
         <div class="row Arrosage p-1">
             <div class="col-12 ">
                 <div class ="col-5 mx-auto">
-                    <a href="/arrosage" class="btn btn-warning btn-outline-warning btn-lg mx-auto d-block active" role="button" aria-pressed="true">Arroser le jardin</a>
+                    <a id="lienArro" href="/arrosage" class="btn btn-warning btn-outline-warning btn-lg mx-auto d-block active" role="button" aria-pressed="true">Arroser le jardin</a>
                 </div>
             </div>
-            <div id="nbCycles" class="col-sm-4">
-                
+            <div class="col-12 ">
+                <div class ="col-5 mx-auto">
+                    <a href="/arrosagePuits" class="btn btn-warning btn-outline-warning btn-lg mx-auto d-block active" role="button" aria-pressed="true" >Arroser le jardin via la Puits</a>
+                </div>
+            </div>
+            <div id="infoArro" class="col-12">
+                <p>Temps arrosage : <span id="chronoArro"></span></p>
+                <p>Date arrosage : <span id="dateArro"></span></p>
+                <p>Temps arrosage configuré : <span id="configArro"></span></p>
             </div>
         </div>
         <div class="row Footer">
@@ -107,6 +124,7 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
 <script src=https://rawgit.com/kottenator/jquery-circle-progress/1.2.2/dist/circle-progress.js></script>

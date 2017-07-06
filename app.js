@@ -11,7 +11,8 @@ const app = express();
 
 //routes
 app.get ('/', controller.Index);
-app.get ('/arrosage', controller.Arrosage);
+app.get ('/arrosage/:time', controller.Arrosage);
+app.get ('/arrosagePuits', controller.ArrosagePuits);
 app.get ('/database', controller.MakeData);
 
 app.listen(8080);

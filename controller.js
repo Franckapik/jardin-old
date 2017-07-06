@@ -3,7 +3,7 @@ var Influx = require('influx');
 var fs = require('fs');
 var moment = require('moment');
 var dht = require('dht-sensor');
-var config = require('./config');
+var config = require('./public/config');
 var Promise = require("bluebird");
 var bhttp = require("bhttp");
 var PythonShell = require('python-shell');
@@ -127,7 +127,17 @@ var queryData = function(req, res) { //Base de données vers JSON
 
         fs.writeFile('./public/message.json', data, (err) => {
             if (err) throw err;
-            console.log('Message.json - Données db récupérées');
+            console.log('DB ---> Message.json');
+        });
+    });
+
+    db.query('select * from arrosage order by time desc limit 10').then(results => {
+
+        var data = JSON.stringify({ results }); //object javascript avec ses proprietes.
+
+        fs.writeFile('./public/arrosage.json', data, (err) => {
+            if (err) throw err;
+            console.log('DB ---> Arrosage.json');
         });
     });
 };
@@ -135,14 +145,40 @@ var queryData = function(req, res) { //Base de données vers JSON
 var arrosage = function(req, res) {
 
     Promise.try(function() {
-        return bhttp.get("http://192.168.1." + config.ippi0 + ":8080/arrosage");
+        return bhttp.get("http://192.168.1." + config.ippi0 + ":8080/arrosage/"+req.params.time);
     }).then(function(response) {
         res.send("Le temps d'arrosage est de " + response.body.toString());
     });
 
 }
 
+var arrosagePuits = function(req, res) {
+
+
+        gpio.BCM_GPIO = true;
+
+        Promise.try(() => {
+            return gpio.output(0, 1)
+        }).then(() => {
+            console.log("*** Arrosage en cours de préparation ... ***");
+
+            return gpio.write(0, 0)
+        }).then(() => {
+            console.log("*** Arrosage activé ***");
+
+            return Promise.delay(60000);
+        }).then(() => {
+            
+            return gpio.output(0, 0)
+        }).then(() => {
+            console.log("*** Arrosage terminé ***");
+
+            
+        })
+
+}
 
 exports.Arrosage = arrosage;
+exports.ArrosagePuits = arrosagePuits;
 exports.Index = indexCreation;
 exports.MakeData = makeData;

@@ -1,6 +1,6 @@
 var CronJob = require('cron').CronJob;
 var controller = require('./controller');
-var config = require('./config');
+var config = require('./public/config');
 
 console.log(' -- Automatisme Arrosage/Sensors (required) --')
 

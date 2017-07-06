@@ -7,6 +7,7 @@ var config = {
     ippi0 : 46,
     timeCycleHours : 13,
 	timeCycleMinutes : 57,
+	tempsArrosage : 60
 
 
 }

@@ -190,7 +190,7 @@ if (diffT == 0) {
 
 }
 
-var parseJSON = function() {
+var parseMessageJSON = function() {
     moment.locale('fr');
     return $.getJSON('./public/message.json').then(({ results }) => {    
         return results.reduce(({ time, temp, humi, eau }, result) => {
@@ -206,46 +206,61 @@ var parseJSON = function() {
 
 // used like this:
 
-parseJSON().then((results) => {
+parseMessageJSON().then((results) => {
     const { time, temp, humi, eau } = results;
     makeChart(time, temp, humi, eau);
     dataDOM(time, temp, humi, eau);
 })
 
+var parseArrosageJSON = function () {
+$.getJSON('./public/arrosage.json', function(data) {
+	console.log(data.results[0].time);
+	const close = moment(data.results[0].time); 
+	const open = moment(data.results[1].time); 
+	var chronoArrosage = moment.duration(close.diff(open)).as('second') + ' seconde(s)'
+	$('#chronoArro').html(chronoArrosage);
+	$('#dateArro').html(data.results[0].close);
 
-/*
-var parseJSON = function(Time, Temp, Humi, Eau) {
+	$.getScript("./public/config.js", function(data) {
+	    console.log(data);
+            var pos= data.indexOf("timeCycleHours :");
+            var pos2=data.indexOf("timeCycleMinutes :");
+            var hours= data.substring(pos+17, pos + 19);
+            var minutes= data.substring(pos2+19, pos2 +21);
+            $('#configArro').html(hours+'H'+minutes);
+            
+	});
 
-    $.getJSON('./public/message.json', function(data) {
-
-        for (var i = 0; i < data.results.length; i++) {
-
-            moment.locale('fr');
-            var timeFormat = moment(data.results[i].time).format('MMMM Do, h:mm a');
-
-            Time.push(timeFormat);
-            Temp.push(data.results[i].temperature);
-            Humi.push(data.results[i].humidity);
-            Eau.push(data.results[i].niveauEau);
-
-        }
-        
-        /**makeChart(Time, Temp, Humi, Eau);
-        
-        dataDOM(Time, Temp, Humi, Eau);
+	
 
 
-    })
-    .done(
-        console.log(Humi[0])
-        );
-};
+})
 
-var sendConfig = function() {
+}
 
-    $('#nbcycles').text(config.timeCycle + " minutes");
+parseArrosageJSON();
 
-};
+var slider = new Slider('#arrotime', {
+    min: 0,
+    max: 360,
+    scale: 'logarithmic',
+    step: 5,
+    tooltip: 'always',
+    tooltip_position:'bottom',
+    formatter: function(value) {
+        return 'Current value: ' + value;
+    }
+});
 
-parseJSON(tableauTime, tableauTemp, tableauHumi, tableauEau);
-*/
+slider.on("slide", function(sliderValue) {
+    document.getElementById("affichageTemps").textContent = sliderValue;
+    console.log(sliderValue);
+    $('#lienArro').attr("href", "/arrosage/" + sliderValue);
+});
+
+$("#affichageTemps").on('input', 
+function(){
+    console.log('hey');
+}
+
+    );
