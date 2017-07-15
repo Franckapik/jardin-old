@@ -39,6 +39,10 @@ p {
     right: 0;
     left: 0;
 }
+.img-responsive{
+width: 100%;
+
+}
 .hum-bar {
     height: 50%;
     max-height: 65%;

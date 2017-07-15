@@ -25,6 +25,7 @@ jobniveau.start();
 
 //----------------------
 //Arrosage Automatique
+/**
 var jobarrosage = new CronJob({
 
     cronTime: '00 17 14 * * *',
@@ -44,5 +45,5 @@ jobarrosage.start();
 
 // ----------------------
 
-exports.jobArrosage = jobarrosage;
+exports.jobArrosage = jobarrosage;*/
 exports.jobNiveau = jobniveau;

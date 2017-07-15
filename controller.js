@@ -97,6 +97,7 @@ var makeData = function(req, res) { //DHT vers Base de données
         var temp = dht[0];
         var hum = dht[1];
         var level2 = 100 - parseInt(level)
+        console.log(level2);
 
 
 
@@ -182,3 +183,4 @@ exports.Arrosage = arrosage;
 exports.ArrosagePuits = arrosagePuits;
 exports.Index = indexCreation;
 exports.MakeData = makeData;
+exports.niveauCuve = niveauCuve;
